@@ -145,7 +145,6 @@ namespace cryptonote
   {
 
   public:
-    enum BLOB_TYPE blob_type;
     // tx information
     size_t   version;
     uint64_t unlock_time;  //number of block (or time), used as a limitation like: spend this tx not early then block/time
@@ -155,16 +154,8 @@ namespace cryptonote
     //extra
     std::vector<uint8_t> extra;
 
-    std::vector<uint64_t> output_unlock_times;
-    bool is_deregister;
-
     BEGIN_SERIALIZE()
       VARINT_FIELD(version)
-      if (blob_type == BLOB_TYPE_CRYPTONOTE_LOKI)
-      {
-        FIELD(output_unlock_times)
-        FIELD(is_deregister)
-      }
       VARINT_FIELD(unlock_time)
       FIELD(vin)
       FIELD(vout)
@@ -173,12 +164,13 @@ namespace cryptonote
 
 
   protected:
-    transaction_prefix() : blob_type(BLOB_TYPE_CRYPTONOTE) {}
+    transaction_prefix(){}
   };
 
   class transaction: public transaction_prefix
   {
   public:
+    enum BLOB_TYPE blob_type;
     std::vector<std::vector<crypto::signature> > signatures; //count signatures  always the same as inputs count
     rct::rctSig rct_signatures;
 
@@ -247,7 +239,7 @@ namespace cryptonote
   };
 
   inline
-  transaction::transaction()
+  transaction::transaction() : blob_type(BLOB_TYPE_CRYPTONOTE)
   {
     set_null();
   }
